@@ -31,20 +31,93 @@ from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as sa
 assert cf
+from DISClib.ADT import orderedmap as om
 
 """
 Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
 los mismos.
 """
 
-# Construccion de modelos
+def newAnalyzer():
 
-# Funciones para agregar informacion al catalogo
+    """ 
+        Inicializa el analizador.
+        Crea un nuevo Map para cargar el archivo, dentro de este se
+        crea una lista vacia para cargar alli todos los casos de
+        avistamientos. También, crea indices para la busqueda de los
+        avistamientos por criterios de casos por ciudad, casos por
+        duración de segundos y casos por hora de avistamiento, los datos
+        se indicarán en los indices dentro de un Map de tipo RBT. 
+        Retorna el analizador inicializado.
+    """
+    
+    analyzer = mp.newMap(
+                        5,
+                        maptype = "CHAINING",
+                        loadfactor = 4.0,
+                        comparefunction = None
+                    )
 
-# Funciones para creacion de datos
+    mp.put(
+            analyzer,
+            "cases",
+            lt.newList(
+                        'ARRAY_LIST'
+                        )
+            )
 
-# Funciones de consulta
+    mp.put(
+            analyzer,
+            "casesSize",
+            lt.size(
+                    me.getValue(
+                                mp.get(
+                                        analyzer, "cases"
+                                    )
+                                )
+                    ) 
+            )
 
-# Funciones utilizadas para comparar elementos dentro de una lista
+    mp.put(
+            analyzer,
+            "casesByCity",
+            om.newMap(  
+                        omaptype='RBT',
+                        comparefunction=None
+                    )
+            )
 
-# Funciones de ordenamiento
+    mp.put(
+            analyzer,
+            "casesBySeconds",
+            om.newMap(  
+                        omaptype='RBT',
+                        comparefunction=None
+                        )
+            )
+
+    mp.put(
+            analyzer,
+            "casesByHour",
+            om.newMap(  
+                        omaptype='RBT',
+                        comparefunction=None
+                    )
+            )
+
+    return analyzer
+
+def loadData(analyzer):
+
+    """ 
+        Inicializa el analizador.
+        Crea un nuevo Map para cargar el archivo, dentro de este se
+        crea una lista vacia para cargar alli todos los casos de
+        avistamientos. También, crea indices para la busqueda de los
+        avistamientos por criterios de casos por ciudad, casos por
+        duración de segundos y casos por hora de avistamiento, los datos
+        se indicarán en los indices dentro de un Map de tipo RBT. 
+        Retorna el analizador inicializado.
+    """
+
+    return None
