@@ -26,7 +26,9 @@ import controller
 from DISClib.ADT import list as lt
 assert cf
 import threading
-
+from DISClib.ADT import map as mp
+from DISClib.DataStructures import mapentry as me
+from DISClib.ADT.graph import gr
 
 """
 La vista se encarga de la interacción con el usuario
@@ -50,6 +52,9 @@ def printMenu():
 
 catalog = None
 analyzer = None
+airportsFullFile = 'Skylines/airports_full.csv'
+routesFullFile = 'Skylines/routes_full.csv'
+worldCitiesFile = 'Skylines/worldcities.csv'
 
 """
 Menu principal
@@ -57,11 +62,12 @@ Menu principal
 
 
 def optionOne():
+    "Incializando Analyzer..."
     return controller.newAnalyzer()
 
 def optionTwo(analyzer):
-    controller.loadData(analyzer)
-    print("Datos cargados en el Analyzer.")
+    analyzer = controller.loadData(analyzer, airportsFullFile, routesFullFile, worldCitiesFile)
+    return analyzer
 
 
 def optionThree(analyzer):
@@ -104,10 +110,12 @@ def thread_cycle():
             print("Analyzer inicializado.")
 
         elif int(inputs[0]) == 2:
-            print(optionTwo(analyzer))
+            analyzer = optionTwo(analyzer)
+            print(analyzer)
 
         elif int(inputs[0]) == 3:
-            optionThree(analyzer)
+            print(optionThree(analyzer))
+
 
         elif int(inputs[0]) == 4:
             optionFour(analyzer)
