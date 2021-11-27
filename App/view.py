@@ -71,7 +71,7 @@ def optionTwo(analyzer):
 
 
 def optionThree(analyzer):
-    return None
+    return gr.getEdge(analyzer["noDirectedGraph"], "KZN", "AER")
 
 
 def optionFour(analyzer):
@@ -111,7 +111,6 @@ def thread_cycle():
 
         elif int(inputs[0]) == 2:
             analyzer = optionTwo(analyzer)
-            print(analyzer)
 
         elif int(inputs[0]) == 3:
             print(optionThree(analyzer))

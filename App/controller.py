@@ -52,6 +52,7 @@ def loadData(analyzer, airportsFullFile, routesFullFile, worldCitiesFile):
     for row in routesFullFile:
         model.addRoutesFullRow(analyzer, row)
         model.addAirportDestinationValuesaAndConnections(analyzer, row)
+        model.addAirpotCommonDestination(analyzer, row)
 
     for row in worldCitiesFile:
         model.addworldCitiesRow(analyzer, row)

@@ -25,6 +25,7 @@
  """
 
 
+from DISClib.DataStructures.arraylist import addLast
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
@@ -54,16 +55,20 @@ def newAnalyzer():
     """
     
     analyzer = {
+            "noDirectedGraph": None,
+            "directedGraph": None,
             "airportsFull": None,
             "routesFull": None,
             "worldCities": None,
             "airportDestinations": None,
-            "directedGraph": None
+            "directedGraphAdded": None
     }
     
     analyzer["airportsFull"] = lt.newList("ARRAY_LIST")
     analyzer["routesFull"] = lt.newList("ARRAY_LIST")
     analyzer["worldCities"] = lt.newList("ARRAY_LIST")
+
+
 
     analyzer["airportDestinations"] = mp.newMap(numelements=14000,
                                      maptype='PROBING',
@@ -73,6 +78,15 @@ def newAnalyzer():
                                               directed=True,
                                               size=14000,
                                               comparefunction=None)
+
+    analyzer["noDirectedGraph"] = gr.newGraph(datastructure='ADJ_LIST',
+                                              directed=False,
+                                              size=14000,
+                                              comparefunction=None)
+
+    analyzer["directedGraphAdded"] = mp.newMap(numelements=14000,
+                                     maptype='PROBING',
+                                     comparefunction=None)
 
     return analyzer
 
@@ -118,3 +132,40 @@ def addAirport(analyzer,row):
                 return analyzer
         except Exception as exp:
                 error.reraise(exp, 'model:addairport') 
+
+def addAirpotCommonDestination(analyzer, row):
+
+        addedMap = analyzer["directedGraphAdded"]
+
+        departureAirportIATA = row["Departure"]
+        destinationAirportIATA = row["Destination"]
+
+        if not mp.contains(addedMap, departureAirportIATA):
+                mp.put(addedMap, departureAirportIATA, lt.newList("ARRAY_LIST"))
+
+        if not mp.contains(addedMap, destinationAirportIATA):
+                mp.put(addedMap, destinationAirportIATA, lt.newList("ARRAY_LIST"))
+
+        distance = row["distance_km"]
+
+        airportDestinationsMap = analyzer["airportDestinations"]
+
+        departureAirportAirportDestinationsList = me.getValue(mp.get(airportDestinationsMap, departureAirportIATA))
+        destinationAirportAirportDestinationsList = me.getValue(mp.get(airportDestinationsMap, destinationAirportIATA))
+        
+        graph = analyzer["noDirectedGraph"]
+
+        if lt.isPresent(me.getValue(mp.get(addedMap, departureAirportIATA)), destinationAirportIATA) == 0 and lt.isPresent(me.getValue(mp.get(addedMap, destinationAirportIATA)), departureAirportIATA) == 0:
+
+                if lt.isPresent(departureAirportAirportDestinationsList,  destinationAirportIATA) != 0 and lt.isPresent(destinationAirportAirportDestinationsList,  departureAirportIATA) != 0:
+                        try:
+                                if not gr.containsVertex(graph, departureAirportIATA):
+                                        gr.insertVertex(graph, departureAirportIATA)
+                                if not gr.containsVertex(graph, destinationAirportIATA):
+                                        gr.insertVertex(graph, destinationAirportIATA)
+                                gr.addEdge(graph, departureAirportIATA, destinationAirportIATA, distance)
+                                lt.addLast(me.getValue(mp.get(addedMap, departureAirportIATA)), destinationAirportIATA)
+                                lt.addLast(me.getValue(mp.get(addedMap, destinationAirportIATA)), departureAirportIATA)
+                                return analyzer
+                        except Exception as exp:
+                                error.reraise(exp, 'model:addairpotcommondestination')
