@@ -56,5 +56,9 @@ def loadData(analyzer, airportsFullFile, routesFullFile, worldCitiesFile):
 
     for row in worldCitiesFile:
         model.addworldCitiesRow(analyzer, row)
+        model.addCity(analyzer, row)
 
     return analyzer
+
+def reqSix(analyzer, departureCity, destinationCity):
+    return model.reqSix(analyzer, departureCity, destinationCity)

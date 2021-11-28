@@ -23,6 +23,7 @@
 import config as cf
 import sys
 import controller
+import model
 from DISClib.ADT import list as lt
 assert cf
 import threading
@@ -71,7 +72,7 @@ def optionTwo(analyzer):
 
 
 def optionThree(analyzer):
-    return gr.getEdge(analyzer["noDirectedGraph"], "KZN", "AER")
+    return None
 
 
 def optionFour(analyzer):
@@ -89,11 +90,13 @@ def optionSeven(analyzer):
     return None
 
 def optionEight(analyzer):
-    return None
+    departureCity = input("\nInsert the departure city: ")
+    depstinationCity = input("Insert the destination city: ")
+    return controller.reqSix(analyzer, departureCity, depstinationCity)
 
 def optionNine(analyzer):
-    return None
-
+    model.minimumCostPaths(analyzer, "CPE")
+    print(analyzer["paths"])
 
 """
 Menu principal
@@ -141,6 +144,6 @@ def thread_cycle():
 
 if __name__ == "__main__":
     threading.stack_size(67108864)  # 64MB stack
-    sys.setrecursionlimit(2 ** 20)
+    sys.setrecursionlimit(2 ** 30)
     thread = threading.Thread(target=thread_cycle)
     thread.start()
