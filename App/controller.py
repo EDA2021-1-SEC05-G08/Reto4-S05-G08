@@ -20,45 +20,114 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+"""
+    El controlador se encarga de mediar entre la vista y el modelo.
+"""
+
+#•••••••••••••••••••••••••••••••••••••••••
+#   Importaciones.
+#•••••••••••••••••••••••••••••••••••••••••
+
 import config as cf
 import model
 import csv
 
-
-"""
-El controlador se encarga de mediar entre la vista y el modelo.
-"""
+#•••••••••••••••••••••••••••••••••••••••••
+#   Inicializacion del analizador.
+#•••••••••••••••••••••••••••••••••••••••••
 
 def newAnalyzer():
     return model.newAnalyzer()
 
+#•••••••••••••••••••••••••••••••••••••••••
+#   Carga de datos al analizador.
+#•••••••••••••••••••••••••••••••••••••••••
+
 def loadData(analyzer, airportsFullFile, routesFullFile, worldCitiesFile):
     
     airportsFullFile = cf.data_dir + airportsFullFile
-    airportsFullFile = csv.DictReader(open(airportsFullFile, encoding="utf-8"), delimiter=",")
+    airportsFullFile = csv.DictReader(
+                                        open(
+                                                airportsFullFile,
+                                                encoding="utf-8"
+                                            ),
+                                        delimiter=","
+                                )
 
     routesFullFile = cf.data_dir + routesFullFile
-    routesFullFile = csv.DictReader(open(routesFullFile, encoding="utf-8"), delimiter=",")
+    routesFullFile = csv.DictReader(
+                                    open(
+                                            routesFullFile,
+                                            encoding="utf-8"
+                                        ), 
+                                    delimiter=","
+                                )
 
     worldCitiesFile = cf.data_dir + worldCitiesFile
-    worldCitiesFile = csv.DictReader(open(worldCitiesFile, encoding="utf-8"), delimiter=",")
+    worldCitiesFile = csv.DictReader(
+                                        open(
+                                                worldCitiesFile,
+                                                encoding="utf-8"
+                                            ),
+                                        delimiter=","
+                                )
 
     for row in airportsFullFile:
-        model.addAirporttFullRow(analyzer, row)
-        model.addAirport(analyzer, row)
-        model.addAirportDestinationkeys(analyzer, row)
+
+        model.addAirporttFullRow(
+                                    analyzer,
+                                    row
+                                )
+
+        model.addAirport(
+                            analyzer,
+                            row
+                        )
+
+        model.addAirportDestinationkeys(
+                                            analyzer,
+                                            row
+                                        )
         
 
     for row in routesFullFile:
-        model.addRoutesFullRow(analyzer, row)
-        model.addAirportDestinationValuesaAndConnections(analyzer, row)
-        model.addAirpotCommonDestination(analyzer, row)
+
+        model.addRoutesFullRow(
+                                analyzer,
+                                row
+                            )
+
+        model.addAirportDestinationValuesaAndConnections(
+                                                            analyzer,
+                                                            row
+                                                        )
+
+        model.addAirpotCommonDestination(
+                                            analyzer,
+                                            row
+                                        )
 
     for row in worldCitiesFile:
-        model.addworldCitiesRow(analyzer, row)
-        model.addCity(analyzer, row)
+
+        model.addworldCitiesRow(
+                                    analyzer,
+                                    row
+                                )
+
+        model.addCity(
+                        analyzer,
+                        row
+                    )
 
     return analyzer
 
+#•••••••••••••••••••••••••••••••••••••••••
+#   Funciones de consulta.
+#•••••••••••••••••••••••••••••••••••••••••
+
 def reqSix(analyzer, departureCity, destinationCity):
-    return model.reqSix(analyzer, departureCity, destinationCity)
+    return model.reqSix(
+                        analyzer,
+                        departureCity, 
+                        destinationCity
+                    )

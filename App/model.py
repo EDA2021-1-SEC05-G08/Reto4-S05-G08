@@ -24,6 +24,9 @@
  * Dario Correal - Version inicial
  """
 
+#•••••••••••••••••••••••••••••••••••••••••
+#   Importaciones.
+#•••••••••••••••••••••••••••••••••••••••••
 
 from os import access
 from sys import path
@@ -49,14 +52,9 @@ from math import radians, cos, sin, asin, sqrt
 def newAnalyzer():
 
     """ 
-        Inicializa el analizador.
-        Crea un nuevo Map para cargar el archivo, dentro de este se
-        crea una lista vacia para cargar alli todos los casos de
-        avistamientos. También, crea indices para la busqueda de los
-        avistamientos por criterios de casos por ciudad, casos por
-        duración de segundos y casos por hora de avistamiento, los datos
-        se indicarán en los indices dentro de un Map de tipo RBT. 
-        Retorna el analizador inicializado.
+
+        Inicializa el analyzer y sus estructuras de datos.
+
     """
     
     analyzer = {
@@ -66,9 +64,9 @@ def newAnalyzer():
             "routesFull": None,
             "worldCities": None,
             "airportDestinations": None,
-            "directedGraphAdded": None,
-            "cities": None,
-            'paths': None
+            'paths': None,
+            "noDirectedGraphAdded": None,
+            "citiesByASCII": None
     }
     
     analyzer["airportsFull"] = lt.newList("ARRAY_LIST")
@@ -77,27 +75,37 @@ def newAnalyzer():
 
 
 
-    analyzer["airportDestinations"] = mp.newMap(numelements=14000,
-                                     maptype='PROBING',
-                                     comparefunction=None)
+    analyzer["airportDestinations"] = mp.newMap(
+                                                numelements=14000,
+                                                maptype='PROBING',
+                                                comparefunction=None
+                                                )
     
-    analyzer["directedGraph"] = gr.newGraph(datastructure='ADJ_LIST',
-                                              directed=True,
-                                              size=14000,
-                                              comparefunction=None)
+    analyzer["directedGraph"] = gr.newGraph(
+                                                datastructure='ADJ_LIST',
+                                                directed=True,
+                                                size=14000,
+                                                comparefunction=None
+                                        )
 
-    analyzer["noDirectedGraph"] = gr.newGraph(datastructure='ADJ_LIST',
-                                              directed=False,
-                                              size=14000,
-                                              comparefunction=None)
+    analyzer["noDirectedGraph"] = gr.newGraph(
+                                                datastructure='ADJ_LIST',
+                                                directed=False,
+                                                size=14000,
+                                                comparefunction=None
+                                        )
 
-    analyzer["directedGraphAdded"] = mp.newMap(numelements=14000,
-                                     maptype='PROBING',
-                                     comparefunction=None)
+    analyzer["noDirectedGraphAdded"] = mp.newMap(
+                                                numelements=14000,
+                                                maptype='PROBING',
+                                                comparefunction=None
+                                        )
 
-    analyzer["citiesByASCII"] = mp.newMap(numelements=14000,
-                                     maptype='PROBING',
-                                     comparefunction=None)
+    analyzer["citiesByASCII"] = mp.newMap(
+                                                numelements=14000,
+                                                maptype='PROBING',
+                                                comparefunction=None
+                                        )
 
     return analyzer
 
@@ -107,58 +115,151 @@ def newAnalyzer():
 
 def reqSix(analyzer, departureCity, destinationCity):
 
-        posibleDepartureCitiesList = me.getValue(mp.get(analyzer["citiesByASCII"], departureCity))
-        posibleDestinationCitiesList = me.getValue(mp.get(analyzer["citiesByASCII"], destinationCity))
+        """
+
+                Responde al requerimiento 6.
+
+        """
+
+        # Se obtiene el mapa que guarda las ciudades con nombre similares.
+        citiesByASCII = analyzer["citiesByASCII"]
+
+        # Se obtiene la lista de las ciudades que poseen nombres similares
+        # a la ciudad de partida ingresada por el ususario.
+        posibleDepartureCitiesList = me.getValue(
+                                                        mp.get(
+                                                                citiesByASCII, 
+                                                                departureCity)
+                                                )
+
+        # Se obtiene la lista de las ciudades que poseen nombres similares
+        # a la ciudad de destino ingresada por el ususario.
+
+        posibleDestinationCitiesList = me.getValue(
+                                                        mp.get(
+                                                                citiesByASCII,
+                                                                destinationCity)
+                                                )
 
         print(f"\nThere are {lt.size(posibleDepartureCitiesList)} departure cities posibilities, this is the list:\n")
 
+        # Retorna la lista de ciudades de partida con nombres similares a
+        # la ingresada por el ususario.
         departureCityPosition = 1
         for i in lt.iterator(posibleDepartureCitiesList):
-                print(f"{departureCityPosition}. {i['city']}, {i['country']}, {i['lat']}, {i['lng']}")
+                print(f"{departureCityPosition}, {i['city']}, {i['country']}, {i['lat']}, {i['lng']}")
                 departureCityPosition += 1
 
+        # Le pide al usuario seleccionar alguna de las ciudades motradas.
         departureCityPosition = int(input("\nSelect one by number: "))
-        departureCityMap = lt.getElement(posibleDepartureCitiesList, departureCityPosition)
+
+        # Selecciona de la lista de posibles ciudades el mapa de la ciudad
+        # elegida por el usuario.
+        departureCityMap = lt.getElement(
+                                                posibleDepartureCitiesList,
+                                                departureCityPosition
+                                        )
 
         print(f"\nThere are {lt.size(posibleDestinationCitiesList)} destination cities posibilities, this is the list:\n")
 
+        # Retorna la lista de ciudades de destino con nombres similares a
+        # la ingresada por el ususario.
         destinationCityPosition = 1
         for i in lt.iterator(posibleDestinationCitiesList):
                 print(f"{destinationCityPosition}. {i['city']}, {i['country']}, {i['lat']}, {i['lng']}")
                 destinationCityPosition += 1
 
+        # Le pide al usuario seleccionar alguna de las ciudades motradas.
         destinationCityPosition = int(input("\nSelect one by number: "))
-        destinationCityMap = lt.getElement(posibleDestinationCitiesList, destinationCityPosition)
 
+        # Selecciona de la lista de posibles ciudades el mapa de la ciudad
+        # elegida por el usuario.
+        destinationCityMap = lt.getElement(
+                                                posibleDestinationCitiesList,
+                                                destinationCityPosition
+                                        )
+
+        # Se extrae la latitud y longitud de la ciudad de partida.
         departureCityLatitude = departureCityMap["lat"]
         departureCityLongitude = departureCityMap["lng"]
 
+        # Se extrae la latitud y longitud de la ciudad de destino.
         destinationCityLatitude = destinationCityMap["lat"]
         destinationCityLongitude = destinationCityMap["lng"]
 
+        # Se obtiene el codigo de acceso de para poder consultar la API.
         acessToken = getAcessToken()
 
+        # Se incializa una nueva estructura de datos para guardar la
+        # información consultada en la API.
         APIData = {
-                        "departureData": queryAPI(departureCityLatitude, departureCityLongitude, acessToken)["data"],
-                        "destinatioData": queryAPI(destinationCityLatitude, destinationCityLongitude, acessToken)["data"]
+                        "departureData": None,
+                        "destinatioData": None
                 }
 
+        # Se guarda la información de aeropuertos cercanos al punto
+        # geografico de partida retornado por la API.
+        APIData["departureData"] = queryAPI(
+                                                departureCityLatitude,
+                                                departureCityLongitude,
+                                                acessToken
+                                        )["data"]
+        
+        # Se guarda la información de aeropuertos cercanos al punto
+        # geografico de destino retornado por la API.
+        APIData["destinatioData"] = queryAPI(
+                                                destinationCityLatitude,
+                                                destinationCityLongitude,
+                                                acessToken
+                                        )["data"]
+
+        # Se inicializan variables y/o asignan para usarlas mas
+        # adelante.
         path = None
+        answer = None
         pathList = lt.newList("ARRAY_LIST")
         counter = 1
+        departureData = APIData["departureData"]
+        destinatioData = APIData["destinatioData"]
 
-        if len(APIData["departureData"]) == 0:
+        # Retorna una respuesta para toda la funcion en caso de
+        # que no la API no encuentre aeropuertos en la ubicación
+        # de partida dada por el usuario.
+        if len(departureData) == 0:
                 answer = "No airports found in departure city."
-        
-        elif len(APIData["destinatioData"]) == 0:
+
+        # Retorna una respuesta para toda la funcion en caso de
+        # que no la API no encuentre aeropuertos en la ubicación
+        # de destino dada por el usuario.
+        elif len(destinatioData) == 0:
                 answer = "No airports found in destination city."
         
+        # En caso de que la API si encuentre aeropuertos tanto en 
+        # la ubicación de destino como de salida, se hace continua
+        # con la función.
         else: 
-                departureAirportIATA = APIData["departureData"][0]["iataCode"]
-                destinationAirportIATA = APIData["destinatioData"][0]["iataCode"]
-                minimumCostPaths(analyzer, departureAirportIATA)
-                path = minimumCostPath(analyzer, destinationAirportIATA)
+                # Se obtiene el IATA del aeropuesto de salida.
+                departureAirportIATA = departureData[0]["iataCode"]
 
+                # Se obtiene el IATA del aeropuesto de destino.
+                destinationAirportIATA = destinatioData[0]["iataCode"]
+
+                # Se calculan los caminos de costos minimos que hay
+                # para ir desde el aeropuerto de salida hasta
+                # cualquier otro aeropuerto del grafo.
+                minimumCostPaths(
+                                        analyzer,
+                                        departureAirportIATA
+                                )
+
+                # Se calcula el camino directo o las escalas para ir
+                # del aeropuerto de partida al de destino.
+                path = minimumCostPath(
+                                        analyzer,
+                                        destinationAirportIATA
+                                        )
+
+                # Añade el/los camino(s) del recorrido a un nuevo arreglo.
                 if path is not None:
                     pathlen = stack.size(path)
                     print('El camino es de longitud: ' + str(pathlen))
@@ -166,42 +267,73 @@ def reqSix(analyzer, departureCity, destinationCity):
                         stop = stack.pop(path)
                         lt.addLast(pathList, stop)
 
+                # Se incializa una variable para calcular la distancia
+                # aerea total del recorrido.
                 routeDistance = 0
 
+                # Se crea una tabla para mostrar el recrrido de la ruta.
                 pathTable = PrettyTable([
                                                 "Airport A",
                                                 "Airport B",
                                                 "Distance"
                                         ])
-
+                
+                # Se suma la distancia total del recorrido y se añaden
+                # los recorridos a las tablas a mostrar.
                 while counter <= lt.size(pathList):
-                        distancee = lt.getElement(pathList, counter)['weight']
+
+                        distancee = lt.getElement(
+                                                        pathList,
+                                                        counter
+                                                )['weight']
+
                         routeDistance += distancee
+
                         pathTable.add_row(
                                                 [
-                                                        lt.getElement(pathList, counter)['vertexA'],
-                                                        lt.getElement(pathList, counter)['vertexB'],
+                                                        lt.getElement(
+                                                                        pathList,
+                                                                        counter
+                                                                )['vertexA'],
+
+                                                        lt.getElement(
+                                                                        pathList,
+                                                                        counter
+                                                                )['vertexB'],
+                                                        
                                                         distancee
                                                 ]
                                         )
 
                         counter += 1
 
-                departureAirportLatitude = APIData["departureData"][0]["geoCode"]["latitude"]
-                departureAirportLongitude = APIData["departureData"][0]["geoCode"]["longitude"]
+                # Se obtiene la latitud y longitud del aeropuerto de salida.
+                departureAirportLatitude = departureData[0]["geoCode"]["latitude"]
+                departureAirportLongitude = departureData[0]["geoCode"]["longitude"]
 
-                destinationAirportLatitude = APIData["destinatioData"][0]["geoCode"]["latitude"]
-                destinationAirportLongitude = APIData["destinatioData"][0]["geoCode"]["longitude"]
+                # Se obtiene la latitud y longitud del aeropuerto de destino.
+                destinationAirportLatitude = destinatioData[0]["geoCode"]["latitude"]
+                destinationAirportLongitude = destinatioData[0]["geoCode"]["longitude"]
 
+                # Calcula la distancia entre el punto geografico del aeropuerto de salida
+                # y el punto geografico de la ciudad de salida.
                 distanceBetweenDepartureCityAndDepartureAirport = haversine(departureAirportLatitude, departureAirportLongitude, departureCityLatitude, departureAirportLongitude)
+                
+                # Calcula la distancia entre el punto geografico del aeropuerto de destino
+                # y el punto geografico de la ciudad de destino.
                 distanceBetweenDestinationCityAndDestinationAirport = haversine(destinationAirportLatitude, destinationAirportLongitude, destinationCityLatitude, departureCityLongitude)
 
-                answer = f"\nDeparture Airport: {APIData['departureData'][0]['name']}\nDestination Airport: {APIData['destinatioData'][0]['name']}\n\nRuta:\n{pathTable}\n\nTotal route distance: {routeDistance} kilometers\nDistance between departure city and departure airport: {distanceBetweenDepartureCityAndDepartureAirport} miles\nDistance between destination city and destination airport: {distanceBetweenDestinationCityAndDestinationAirport}miles\n"
+                # Se obtiene el nombre del aeropuerto de salida y de destino.
+                departureAirportName = APIData['departureData'][0]['name']
+                destinationAirportName = APIData['destinatioData'][0]['name']
+
+                # Se formatea la salida final de la función.
+                answer = f"\nDeparture Airport: {departureAirportName}\nDestination Airport: {destinationAirportName}\n\nRuta:\n{pathTable}\n\nTotal route distance: {routeDistance} kilometers\nDistance between departure city and departure airport: {distanceBetweenDepartureCityAndDepartureAirport} miles\nDistance between destination city and destination airport: {distanceBetweenDestinationCityAndDestinationAirport}miles\n"
 
         return answer
 
 #•••••••••••••••••••••••••••••••••••••••••
-#   Funciones para añadir información al catalogo.
+#   Funciones para cargar los datos en el Analyzer.
 #•••••••••••••••••••••••••••••••••••••••••
 
 def addAirporttFullRow(analyzer, row):
@@ -216,7 +348,12 @@ def addAirporttFullRow(analyzer, row):
         """
 
         list = analyzer["airportsFull"]
-        lt.addLast(list, row)
+
+        lt.addLast(
+                        list,
+                        row
+                )
+
         return analyzer
 
 def addRoutesFullRow(analyzer, row):
@@ -231,7 +368,12 @@ def addRoutesFullRow(analyzer, row):
         """
 
         list = analyzer["routesFull"]
-        lt.addLast(list, row)
+
+        lt.addLast(
+                        list,
+                        row
+                )
+
         return analyzer
 
 def addworldCitiesRow(analyzer, row):
@@ -246,7 +388,12 @@ def addworldCitiesRow(analyzer, row):
         """
 
         list = analyzer["worldCities"]
-        lt.addLast(list, row)
+
+        lt.addLast(
+                        list,
+                        row
+                )
+
         return analyzer
 
 def addAirportDestinationkeys(analyzer, row):
@@ -264,13 +411,49 @@ def addAirportDestinationkeys(analyzer, row):
 
         map = analyzer["airportDestinations"]   
         airportIATA = row["IATA"]
-        mp.put(map, airportIATA, lt.newList("ARRAY_LIST"))
+
+        mp.put(
+                map, airportIATA,
+                lt.newList("ARRAY_LIST")
+        )
+
+def addAirport(analyzer,row):
+
+        """
+        
+                Añade como vertices los IATAS de los
+                aeropuertos al grafo dirigido.
+
+        """
+        
+        graph = analyzer["directedGraph"]
+        airportIATA = row["IATA"]
+        try:
+                if not gr.containsVertex(
+                                                graph, 
+                                                airportIATA
+                                        ):
+
+                        gr.insertVertex(
+                                                graph,
+                                                airportIATA
+                                        )
+                return analyzer
+        except Exception as exp:
+                error.reraise(
+                                exp,
+                                'model:addairport'
+                        ) 
 
 def addAirportDestinationValuesaAndConnections(analyzer, row):
 
         """
 
-                Anañade 
+                Añade los destinos al mapa de los destinos
+                de los aeropuertos, adicionalmente, crea
+                las conexiones dirigidas en el grafo
+                dirigido entre los aeropuertos y añade
+                como peso sus distancias.
 
         """
 
@@ -278,59 +461,171 @@ def addAirportDestinationValuesaAndConnections(analyzer, row):
         departureAirportIATA = row["Departure"]
         destinationAirportIATA = row["Destination"]
         distance = float(row["distance_km"])
-        list = me.getValue(mp.get(map, departureAirportIATA))
-        if lt.isPresent(list, destinationAirportIATA) == 0:
-                lt.addLast(list, destinationAirportIATA)
-                gr.addEdge(analyzer['directedGraph'], departureAirportIATA, destinationAirportIATA, distance)
 
-def addAirport(analyzer,row):
-        graph = analyzer["directedGraph"]
-        airportIATA = row["IATA"]
-        try:
-                if not gr.containsVertex(graph, airportIATA):
-                        gr.insertVertex(graph, airportIATA)
-                return analyzer
-        except Exception as exp:
-                error.reraise(exp, 'model:addairport') 
+        list = me.getValue(
+                                mp.get(
+                                        map, 
+                                        departureAirportIATA
+                                )
+                        )
+
+        if lt.isPresent(
+                                list,
+                                destinationAirportIATA
+                        ) == 0:
+
+                lt.addLast(
+                                list,
+                                destinationAirportIATA
+                        )
+
+                gr.addEdge(
+                                analyzer['directedGraph'],
+                                departureAirportIATA,
+                                destinationAirportIATA,
+                                distance
+                        )
 
 def addAirpotCommonDestination(analyzer, row):
 
-        addedMap = analyzer["directedGraphAdded"]
+        """
+        
+                Se carga la informacion al grafo no dirigido, el
+                cual contiene como vertices loa IATAS de los
+                aeropuertos y se crea un enlace unicamente entre
+                los aeropuertos que se tienen como destino.
+
+        """
+
+        addedMap = analyzer["noDirectedGraphAdded"]
 
         departureAirportIATA = row["Departure"]
         destinationAirportIATA = row["Destination"]
 
-        if not mp.contains(addedMap, departureAirportIATA):
-                mp.put(addedMap, departureAirportIATA, lt.newList("ARRAY_LIST"))
+        if not mp.contains(
+                                addedMap,
+                                departureAirportIATA
+                        ):
 
-        if not mp.contains(addedMap, destinationAirportIATA):
-                mp.put(addedMap, destinationAirportIATA, lt.newList("ARRAY_LIST"))
+                mp.put(
+                        addedMap,
+                        departureAirportIATA,
+                        lt.newList("ARRAY_LIST")
+                )
+
+        if not mp.contains(
+                                addedMap,
+                                destinationAirportIATA
+                        ):
+
+                mp.put(
+                        addedMap,
+                        destinationAirportIATA,
+                        lt.newList("ARRAY_LIST")
+                )
 
         distance = float(row["distance_km"])
 
         airportDestinationsMap = analyzer["airportDestinations"]
 
-        departureAirportAirportDestinationsList = me.getValue(mp.get(airportDestinationsMap, departureAirportIATA))
-        destinationAirportAirportDestinationsList = me.getValue(mp.get(airportDestinationsMap, destinationAirportIATA))
+        departureAirportAirportDestinationsList = me.getValue(
+                                                                mp.get(
+                                                                        airportDestinationsMap, 
+                                                                        departureAirportIATA
+                                                                )
+                                                        )
+
+        destinationAirportAirportDestinationsList = me.getValue(
+                                                                mp.get(
+                                                                        airportDestinationsMap,
+                                                                        destinationAirportIATA
+                                                                )
+                                                        )
         
         graph = analyzer["noDirectedGraph"]
 
-        if lt.isPresent(me.getValue(mp.get(addedMap, departureAirportIATA)), destinationAirportIATA) == 0 and lt.isPresent(me.getValue(mp.get(addedMap, destinationAirportIATA)), departureAirportIATA) == 0:
+        if lt.isPresent(
+                        me.getValue(
+                                        mp.get(
+                                                addedMap,
+                                                departureAirportIATA
+                                        )
+                                ), 
+                        destinationAirportIATA
+                ) == 0 and lt.isPresent(
+                                        me.getValue(
+                                                        mp.get(
+                                                                addedMap,
+                                                                destinationAirportIATA
+                                                        )
+                                                ), 
+                                        departureAirportIATA
+                                ) == 0:
 
-                if lt.isPresent(departureAirportAirportDestinationsList,  destinationAirportIATA) != 0 and lt.isPresent(destinationAirportAirportDestinationsList,  departureAirportIATA) != 0:
+                if lt.isPresent(
+                                departureAirportAirportDestinationsList, 
+                                destinationAirportIATA
+                                ) != 0 and lt.isPresent(
+                                                        destinationAirportAirportDestinationsList, 
+                                                        departureAirportIATA
+                                                        ) != 0:
                         try:
-                                if not gr.containsVertex(graph, departureAirportIATA):
-                                        gr.insertVertex(graph, departureAirportIATA)
-                                if not gr.containsVertex(graph, destinationAirportIATA):
-                                        gr.insertVertex(graph, destinationAirportIATA)
-                                gr.addEdge(graph, departureAirportIATA, destinationAirportIATA, distance)
-                                lt.addLast(me.getValue(mp.get(addedMap, departureAirportIATA)), destinationAirportIATA)
-                                lt.addLast(me.getValue(mp.get(addedMap, destinationAirportIATA)), departureAirportIATA)
+                                if not gr.containsVertex(
+                                                                graph,
+                                                                departureAirportIATA
+                                                        ):
+                                        gr.insertVertex(
+                                                        graph,
+                                                        departureAirportIATA
+                                                )
+
+                                if not gr.containsVertex(
+                                                                graph,
+                                                                destinationAirportIATA
+                                                        ):
+                                        gr.insertVertex(
+                                                        graph,
+                                                        destinationAirportIATA
+                                                )
+                                gr.addEdge(
+                                                graph,
+                                                departureAirportIATA,
+                                                destinationAirportIATA,
+                                                distance
+                                        )
+                                lt.addLast(
+                                                me.getValue(
+                                                                mp.get(
+                                                                        addedMap, 
+                                                                        departureAirportIATA
+                                                                )
+                                                        ), 
+                                                destinationAirportIATA)
+
+                                lt.addLast(
+                                                me.getValue(
+                                                                mp.get(
+                                                                        addedMap,
+                                                                        destinationAirportIATA
+                                                                )
+                                                        ), 
+                                                departureAirportIATA
+                                        )
                                 return analyzer
                         except Exception as exp:
                                 error.reraise(exp, 'model:addairpotcommondestination')
 
 def addCity(analyzer, row):
+
+        """
+        
+                Añade en una misma lista las ciudades
+                que tienen nombres similares. Esta lista
+                es valor de la llave, la cual es el ascii
+                de la ciudad, que se encuentra en un map.
+
+        """
+
         city = row["city_ascii"]
         map = analyzer["citiesByASCII"]
 
@@ -348,11 +643,34 @@ def addCity(analyzer, row):
                         "id": row["id"]
                 }
 
-        if not mp.contains(map, city):
-                mp.put(map, city, lt.newList("ARRAY_LIST"))
-                lt.addLast(me.getValue(mp.get(map, city)), mapCity)
+        if not mp.contains(
+                                map, 
+                                city
+                        ):
+                mp.put(
+                        map,
+                        city,
+                        lt.newList("ARRAY_LIST")
+                )
+                lt.addLast(
+                                me.getValue(
+                                                mp.get(
+                                                        map,
+                                                        city
+                                                )
+                                        ), 
+                                mapCity
+                        )
         else:
-                lt.addLast(me.getValue(mp.get(map, city)), mapCity)
+                lt.addLast(
+                                me.getValue(
+                                                mp.get(
+                                                        map,
+                                                        city
+                                                )
+                                        ), 
+                                mapCity
+                        )
 
 #•••••••••••••••••••••••••••••••••••••••••
 #   Funciones para consultar la API.
@@ -360,59 +678,109 @@ def addCity(analyzer, row):
 
 def getAcessToken():
 
-        # https://docs.python-requests.org/en/latest/
-        # https://developers.amadeus.com/self-service/apis-docs/guides/authorization-262
+        """
+
+                https://docs.python-requests.org/en/latest/
+                https://developers.amadeus.com/self-service/apis-docs/guides/authorization-262
+
+                Obtiene el codigo de acceso para poder consultar la API
+                Amadeus.
+        
+        """
+
+
 
         url="https://test.api.amadeus.com/v1/security/oauth2/token"
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
+
         data ={
-          "grant_type": "client_credentials", 
-          "client_id": "R26UdEoEUobh9EpW6ECoCUA5QAOcr9Kz",
-          "client_secret": "lIogqm05SknXsOA7"
+                "grant_type": "client_credentials", 
+                "client_id": "R26UdEoEUobh9EpW6ECoCUA5QAOcr9Kz",
+                "client_secret": "lIogqm05SknXsOA7"
         }
 
-        r = requests.post('https://test.api.amadeus.com/v1/security/oauth2/token', headers=headers, data=data)
+        r = requests.post(      'https://test.api.amadeus.com/v1/security/oauth2/token',
+                                headers=headers,
+                                data=data
+                        )
 
         return (r.json()["access_token"])
 
 def queryAPI(latitude, longitude, acessToken):
 
-        # https://developers.amadeus.com/self-service/category/air/api-doc/airport-nearest-relevant/api-reference
+        """
+        
+                # https://developers.amadeus.com/self-service/category/air/api-doc/airport-nearest-relevant/api-reference
+
+                Consulta en la API Amadeus los aeropuertos
+                cercanos a la ubicación geografica dada.
+
+        """
 
         access_token = acessToken
-        headers = {"Authorization": "Bearer " + access_token}
+
+        headers = {
+                        "Authorization": "Bearer " + access_token
+                }
+
         params = {
-          "latitude": float(latitude),
-          "longitude": float(longitude),
-          "radius": 500
-        }
+                        "latitude": float(latitude),
+                        "longitude": float(longitude),
+                        "radius": 500
+                }
 
-        r = requests.get('https://test.api.amadeus.com/v1/reference-data/locations/airports', headers=headers, params=params)
+        r = requests.get(
+                                'https://test.api.amadeus.com/v1/reference-data/locations/airports',
+                                headers=headers,
+                                params=params
+                        )
 
-        #print(r.text)     #Solo para imprimir
-        return (r.json()) #Para procesar
+        return r.json()
 
 #•••••••••••••••••••••••••••••••••••••••••
 #   Funciones adicionales.
 #•••••••••••••••••••••••••••••••••••••••••
 
-def minimumCostPaths(analyzer, initialStation):
-    """
-    Calcula los caminos de costo mínimo desde la estacion initialStation
-    a todos los demas vertices del grafo
-    """
-    analyzer['paths'] = djk.Dijkstra(analyzer["directedGraph"], initialStation)
+def minimumCostPaths(analyzer, initialAirport):
 
-def minimumCostPath(analyzer, destStation):
     """
-    Retorna el camino de costo minimo entre la estacion de inicio
-    y la estacion destino
-    Se debe ejecutar primero la funcion minimumCostPaths
+
+        Calcula los caminos de costo mínimo desde el aeropuerto
+        inicial a todos los demas aeropuertos del grafo.
+    
     """
-    path = djk.pathTo(analyzer['paths'], destStation)
+
+    analyzer['paths'] = djk.Dijkstra(
+                                        analyzer["directedGraph"],
+                                        initialAirport
+                                )
+
+def minimumCostPath(analyzer, destAirport):
+
+    """
+
+    Retorna el camino de costo minimo entre el aeropuerto
+    de inicio y el aeropuerto de destino. Se debe ejecutar
+    primero la funcion minimumCostPaths.
+
+    """
+
+    path = djk.pathTo(
+                        analyzer['paths'],
+                        destAirport
+                )
+
     return path
 
 def haversine(lat1, lon1, lat2, lon2): 
+
+        """
+        
+                Cálcula la distancia terrestre entre
+                dos puntos geograficos.
+
+        """
+
         lat1 = float(lat1)
         lon1 = float(lon1)
         lat2 = float(lat2)
@@ -425,4 +793,3 @@ def haversine(lat1, lon1, lat2, lon2):
         a = sin(dLat/2)**2 + cos(lat1)*cos(lat2)*sin(dLon/2)**2
         c = 2*asin(sqrt(a)) 
         return R * c
-

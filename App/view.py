@@ -20,6 +20,18 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+"""
+La vista se encarga de la interacción con el usuario
+Presenta el menu de opciones y por cada seleccion
+se hace la solicitud al controlador para ejecutar la
+operación solicitada.
+"""
+
+#•••••••••••••••••••••••••••••••••••••••••
+#   Importaciones.
+#•••••••••••••••••••••••••••••••••••••••••
+
+from prettytable.prettytable import NONE
 import config as cf
 import sys
 import controller
@@ -31,12 +43,9 @@ from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.ADT.graph import gr
 
-"""
-La vista se encarga de la interacción con el usuario
-Presenta el menu de opciones y por cada seleccion
-se hace la solicitud al controlador para ejecutar la
-operación solicitada
-"""
+#•••••••••••••••••••••••••••••••••••••••••
+#   Menu.
+#•••••••••••••••••••••••••••••••••••••••••
 
 def printMenu():
     print("Bienvenido")
@@ -51,19 +60,27 @@ def printMenu():
     print("9- Visualizar gráficamente los requerimientos.")
     print("0- Salir")
 
+#•••••••••••••••••••••••••••••••••••••••••
+#   Incializacion de variables.
+#•••••••••••••••••••••••••••••••••••••••••    
+
 catalog = None
 analyzer = None
+
+#•••••••••••••••••••••••••••••••••••••••••
+#   Rutas de archivos.
+#•••••••••••••••••••••••••••••••••••••••••
+
 airportsFullFile = 'Skylines/airports_full.csv'
 routesFullFile = 'Skylines/routes_full.csv'
 worldCitiesFile = 'Skylines/worldcities.csv'
 
-"""
-Menu principal
-"""
+#•••••••••••••••••••••••••••••••••••••••••
+#   Funciones de ejecución.
+#•••••••••••••••••••••••••••••••••••••••••
 
 
 def optionOne():
-    "Incializando Analyzer..."
     return controller.newAnalyzer()
 
 def optionTwo(analyzer):
@@ -95,13 +112,11 @@ def optionEight(analyzer):
     return controller.reqSix(analyzer, departureCity, depstinationCity)
 
 def optionNine(analyzer):
-    model.minimumCostPaths(analyzer, "CPE")
-    print(analyzer["paths"])
+    return None
 
-"""
-Menu principal
-"""
-
+#•••••••••••••••••••••••••••••••••••••••••
+#   Ciclo de la aplicación.
+#•••••••••••••••••••••••••••••••••••••••••
 
 def thread_cycle():
     while True:
@@ -118,15 +133,14 @@ def thread_cycle():
         elif int(inputs[0]) == 3:
             print(optionThree(analyzer))
 
-
         elif int(inputs[0]) == 4:
-            optionFour(analyzer)
+            print(optionFour(analyzer))
 
         elif int(inputs[0]) == 5:
-            optionFive(analyzer)
+            print(optionFive(analyzer))
 
         elif int(inputs[0]) == 6:
-            optionSix(analyzer)
+            print(optionSix(analyzer))
 
         elif int(inputs[0]) == 7:
             print(optionSeven(analyzer))
