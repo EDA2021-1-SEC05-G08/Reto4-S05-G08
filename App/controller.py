@@ -88,6 +88,21 @@ def loadData(analyzer, airportsFullFile, routesFullFile, worldCitiesFile):
                                             analyzer,
                                             row
                                         )
+
+        model.addIATA_nameRelations(
+                                        analyzer,
+                                        row
+                                )
+
+        model.addAirportInfo(
+                                analyzer,
+                                row
+                            )
+
+        model.addAirportByCity(
+                                analyzer, 
+                                row
+                            )
         
 
     for row in routesFullFile:
@@ -124,6 +139,18 @@ def loadData(analyzer, airportsFullFile, routesFullFile, worldCitiesFile):
 #•••••••••••••••••••••••••••••••••••••••••
 #   Funciones de consulta.
 #•••••••••••••••••••••••••••••••••••••••••
+
+def reqOne(analyzer):
+    return model.reqOne(analyzer)
+
+def reqTwo(analyzer, IATA1, IATA2):
+    return model.reqTwo(analyzer, IATA1, IATA2)
+
+def reqThree(analyzer, departureCity, destinationCity):
+    return model.reqThree(analyzer, departureCity, destinationCity)
+
+def reqFive(analyzer, IATA):
+    return model.reqFive(analyzer, IATA)
 
 def reqSix(analyzer, departureCity, destinationCity):
     return model.reqSix(

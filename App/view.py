@@ -48,17 +48,15 @@ from DISClib.ADT.graph import gr
 #•••••••••••••••••••••••••••••••••••••••••
 
 def printMenu():
-    print("Bienvenido")
-    print("1- Inicializar Analizador.")
+    print("\n1- Inicializar Analizador.")
     print("2- Cargar información.")
     print("3- Encontrar puntos de interconexión aérea.")
     print("4- Encontrar clústeresdetráfico aéreo.")
-    print("5- Encontrar la ruta máscorta entre ciudades.")
+    print("5- Encontrar la ruta más corta entre ciudades.")
     print("6- Utilizar las millas de viajero.")
     print("7- Cuantificar el efecto de un aeropuerto cerrado.")
     print("8- Comparar con servicio WEB externo.")
-    print("9- Visualizar gráficamente los requerimientos.")
-    print("0- Salir")
+    print("0- Salir\n")
 
 #•••••••••••••••••••••••••••••••••••••••••
 #   Incializacion de variables.
@@ -71,9 +69,9 @@ analyzer = None
 #   Rutas de archivos.
 #•••••••••••••••••••••••••••••••••••••••••
 
-airportsFullFile = 'Skylines/airports_full.csv'
-routesFullFile = 'Skylines/routes_full.csv'
-worldCitiesFile = 'Skylines/worldcities.csv'
+airportsFullFile = 'Skylines primero/airports_full.csv'
+routesFullFile = 'Skylines primero/routes_full.csv'
+worldCitiesFile = 'Skylines primero/worldcities.csv'
 
 #•••••••••••••••••••••••••••••••••••••••••
 #   Funciones de ejecución.
@@ -89,30 +87,31 @@ def optionTwo(analyzer):
 
 
 def optionThree(analyzer):
-    return None
+    return controller.reqOne(analyzer)
 
 
 def optionFour(analyzer):
-    return None
+    IATA1 = input("\nInsert the first Airport IATA: " )
+    IATA2 = input("Insert the second Airport IATA: " )
+    return controller.reqTwo(analyzer, IATA1, IATA2)
 
 
 def optionFive(analyzer):
-    return None
-
+    departureCity = input("\nInsert the departure city: ")
+    depstinationCity = input("Insert the destination city: ")
+    return controller.reqThree(analyzer, departureCity, depstinationCity)
 
 def optionSix(analyzer):
     return None
 
 def optionSeven(analyzer):
-    return None
+    IATA = input("\nInsert the airport IATA: ")
+    return controller.reqFive(analyzer, IATA)
 
 def optionEight(analyzer):
     departureCity = input("\nInsert the departure city: ")
     depstinationCity = input("Insert the destination city: ")
     return controller.reqSix(analyzer, departureCity, depstinationCity)
-
-def optionNine(analyzer):
-    return None
 
 #•••••••••••••••••••••••••••••••••••••••••
 #   Ciclo de la aplicación.
@@ -121,11 +120,11 @@ def optionNine(analyzer):
 def thread_cycle():
     while True:
         printMenu()
-        inputs = input('Seleccione una opción para continuar\n>')
+        inputs = input('Seleccione una opción para continuar: ')
 
         if int(inputs[0]) == 1:
             analyzer = optionOne()
-            print("Analyzer inicializado.")
+            print("\nAnalyzer inicializado.\n")
 
         elif int(inputs[0]) == 2:
             analyzer = optionTwo(analyzer)
@@ -147,9 +146,6 @@ def thread_cycle():
 
         elif int(inputs[0]) == 8:
             print(optionEight(analyzer))
-
-        elif int(inputs[0]) == 9:
-            print(optionNine(analyzer))
 
         else:
             sys.exit(0)
